@@ -76,7 +76,7 @@ document.querySelector('.contact-form').addEventListener('submit', function(e) {
 });
 
 // Action button handlers
-document.querySelectorAll('.action-btn, .cta-btn, .section-btn, .tracker-btn, .insights-cta-btn, .get-started-btn, .journey-cta-btn').forEach(btn => {
+document.querySelectorAll('.action-btn, .cta-btn, .section-btn, .tracker-btn, .insights-cta-btn, .get-started-btn, .journey-cta-btn, .final-cta-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const btnText = this.textContent.trim();
         
@@ -88,12 +88,14 @@ document.querySelectorAll('.action-btn, .cta-btn, .section-btn, .tracker-btn, .i
                 showNotification('Pricing details will be shared shortly!', 'info');
                 break;
             case 'Book Session':
+            case 'Book Free Counseling':
                 document.querySelector('.consultation-form').scrollIntoView({ behavior: 'smooth' });
                 break;
             case 'Free Demo':
                 showNotification('Free demo registration coming soon!', 'info');
                 break;
             case 'Talk to Expert':
+            case 'Call Expert':
                 document.querySelector('.consultation-form').scrollIntoView({ behavior: 'smooth' });
                 break;
             case 'Live Webinar':
@@ -101,6 +103,7 @@ document.querySelectorAll('.action-btn, .cta-btn, .section-btn, .tracker-btn, .i
                 break;
             case 'Start Your Journey':
             case 'Start Your CAT Journey with Rahul Sir':
+            case 'Start Your CAT Preparation':
                 document.querySelector('.consultation-form').scrollIntoView({ behavior: 'smooth' });
                 break;
             case 'Past Year Papers':
@@ -123,6 +126,9 @@ document.querySelectorAll('.action-btn, .cta-btn, .section-btn, .tracker-btn, .i
                 break;
             case 'Get Started':
                 document.querySelector('.consultation-form').scrollIntoView({ behavior: 'smooth' });
+                break;
+            case 'WhatsApp':
+                showNotification('WhatsApp support will be available soon!', 'info');
                 break;
         }
     });
@@ -557,4 +563,185 @@ const progressObserver = new IntersectionObserver((entries) => {
 const masteryTracker = document.querySelector('.mastery-tracker');
 if (masteryTracker) {
     progressObserver.observe(masteryTracker);
+}
+
+// MBA Timeline Interactive Functionality
+let currentMBAStep = 1;
+const mbaTimelineSteps = document.querySelectorAll('.timeline-step-mba');
+
+function updateMBATimeline(stepNumber) {
+    mbaTimelineSteps.forEach((step, index) => {
+        const stepNum = index + 1;
+        step.classList.toggle('active', stepNum === stepNumber);
+    });
+}
+
+// MBA Timeline Step Click Handler
+mbaTimelineSteps.forEach((step, index) => {
+    step.addEventListener('click', function() {
+        const stepNumber = index + 1;
+        currentMBAStep = stepNumber;
+        updateMBATimeline(stepNumber);
+        
+        // Show notification about the step
+        const stepTitle = this.querySelector('.step-title-mba').textContent;
+        showNotification(`Viewing step ${stepNumber}: ${stepTitle}`, 'info');
+    });
+});
+
+// Auto-advance MBA timeline
+function autoAdvanceMBATimeline() {
+    const interval = setInterval(() => {
+        currentMBAStep = currentMBAStep < mbaTimelineSteps.length ? currentMBAStep + 1 : 1;
+        updateMBATimeline(currentMBAStep);
+    }, 4000);
+    
+    // Stop auto-advance when user interacts
+    mbaTimelineSteps.forEach(step => {
+        step.addEventListener('click', () => {
+            clearInterval(interval);
+        });
+    });
+}
+
+// Start MBA timeline when section is visible
+const mbaTimelineObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            autoAdvanceMBATimeline();
+            mbaTimelineObserver.unobserve(entry.target);
+        }
+    });
+});
+
+const mbaTimelineSection = document.querySelector('.mba-timeline');
+if (mbaTimelineSection) {
+    mbaTimelineObserver.observe(mbaTimelineSection);
+}
+
+// Animate success rates bars
+function animateSuccessRates() {
+    const rateFills = document.querySelectorAll('.rate-fill');
+    rateFills.forEach(fill => {
+        const width = fill.style.width;
+        fill.style.width = '0%';
+        setTimeout(() => {
+            fill.style.width = width;
+        }, 500);
+    });
+}
+
+// Observer for success rates
+const ratesObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            animateSuccessRates();
+        }
+    });
+}, { threshold: 0.5 });
+
+const successRates = document.querySelector('.success-rates');
+if (successRates) {
+    ratesObserver.observe(successRates);
+}
+
+// Animate statistics on scroll
+function animateStatNumbers() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+        const finalNumber = stat.textContent;
+        let currentNumber = 0;
+        const increment = parseInt(finalNumber.replace(/[^\d]/g, '')) / 50;
+        
+        const counter = setInterval(() => {
+            currentNumber += increment;
+            if (currentNumber >= parseInt(finalNumber.replace(/[^\d]/g, ''))) {
+                stat.textContent = finalNumber;
+                clearInterval(counter);
+            } else {
+                const suffix = finalNumber.includes('L+') ? 'L+' : finalNumber.includes('+') ? '+' : '';
+                stat.textContent = Math.floor(currentNumber) + suffix;
+            }
+        }, 30);
+    });
+}
+
+// Observer for statistics
+const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            animateStatNumbers();
+            statsObserver.unobserve(entry.target);
+        }
+    });
+});
+
+const statsSection = document.querySelector('.mba-statistics');
+if (statsSection) {
+    statsObserver.observe(statsSection);
+}
+
+// Smooth scroll for navigation
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        
+        if (targetId === '#courses') {
+            const target = document.querySelector('.exam-structure-section');
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        } else if (targetId === '#test-series') {
+            const target = document.querySelector('.mba-admission-section');
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+        
+        // Update active nav link
+        document.querySelectorAll('.nav-link').forEach(navLink => {
+            navLink.classList.remove('active');
+        });
+        this.classList.add('active');
+    });
+});
+
+// Progress circle animation
+function animateProgressCircle() {
+    const progressCircle = document.querySelector('.progress-ring');
+    if (progressCircle) {
+        progressCircle.style.background = 'conic-gradient(#00d4ff 0%, rgba(255, 255, 255, 0.1) 0%)';
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 2;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+            }
+            progressCircle.style.background = `conic-gradient(#00d4ff ${progress}%, rgba(255, 255, 255, 0.1) 0%)`;
+        }, 20);
+    }
+}
+
+// Observer for progress circle
+const progressCircleObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            animateProgressCircle();
+            progressCircleObserver.unobserve(entry.target);
+        }
+    });
+});
+
+const currentProgress = document.querySelector('.current-progress');
+if (currentProgress) {
+    progressCircleObserver.observe(currentProgress);
 }
