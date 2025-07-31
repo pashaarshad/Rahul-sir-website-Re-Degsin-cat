@@ -101,6 +101,183 @@ document.addEventListener('DOMContentLoaded', function() {
         item.style.transition = `all 0.6s ease ${index * 0.1}s`;
         faqObserver.observe(item);
     });
+});
+
+// Footer and Back to Top Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const backToTopBtn = document.getElementById('backToTop');
+    
+    // Show/hide back to top button based on scroll position
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backToTopBtn.classList.add('visible');
+        } else {
+            backToTopBtn.classList.remove('visible');
+        }
+    });
+    
+    // Smooth scroll to top when button is clicked
+    backToTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Footer link interactions
+    const footerLinks = document.querySelectorAll('.footer-link');
+    footerLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Create notification
+            const notification = document.createElement('div');
+            notification.className = 'notification info';
+            notification.innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <span>Navigating to ${this.textContent}...</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 2000);
+        });
+    });
+    
+    // Contact link interactions
+    const contactLinks = document.querySelectorAll('.contact-link');
+    contactLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (this.href.startsWith('tel:') || this.href.startsWith('mailto:')) {
+                // Allow default behavior for tel and mailto links
+                return;
+            }
+            
+            e.preventDefault();
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification success';
+            notification.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>Opening ${this.textContent}...</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 2000);
+        });
+    });
+    
+    // Social media link interactions
+    const socialLinks = document.querySelectorAll('.social-link');
+    socialLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const platform = this.classList[1]; // Get the platform class (whatsapp, linkedin, etc.)
+            const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification info';
+            notification.innerHTML = `
+                <i class="fab fa-${platform}"></i>
+                <span>Opening ${platformName}...</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 2000);
+        });
+    });
+    
+    // App download button interactions
+    const downloadBtns = document.querySelectorAll('.download-btn');
+    downloadBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const isGooglePlay = this.classList.contains('google-play');
+            const store = isGooglePlay ? 'Google Play Store' : 'App Store';
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification success';
+            notification.innerHTML = `
+                <i class="fas fa-mobile-alt"></i>
+                <span>Redirecting to ${store}...</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 2000);
+        });
+    });
+    
+    // Footer animation on scroll
+    const footerObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    // Observe footer columns for animation
+    const footerColumns = document.querySelectorAll('.footer-column');
+    footerColumns.forEach((column, index) => {
+        column.style.opacity = '0';
+        column.style.transform = 'translateY(30px)';
+        column.style.transition = `all 0.6s ease ${index * 0.1}s`;
+        footerObserver.observe(column);
+    });
+    
+    // Observe footer brand for animation
+    const footerBrand = document.querySelector('.footer-brand');
+    if (footerBrand) {
+        footerBrand.style.opacity = '0';
+        footerBrand.style.transform = 'translateY(30px)';
+        footerBrand.style.transition = 'all 0.6s ease';
+        footerObserver.observe(footerBrand);
+    }
 });nction() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
