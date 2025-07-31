@@ -1,5 +1,107 @@
 // Mobile Navigation Toggle
+document.addEventListener('DOMContentLoaded',     }, 5000);
+});
+
+// FAQ Section Functionality
 document.addEventListener('DOMContentLoaded', function() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            
+            // Close all other FAQ items
+            faqItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                    const otherToggle = otherItem.querySelector('.toggle-icon i');
+                    otherToggle.className = 'fas fa-chevron-down';
+                }
+            });
+            
+            // Toggle current item
+            if (isActive) {
+                item.classList.remove('active');
+                const toggleIcon = item.querySelector('.toggle-icon i');
+                toggleIcon.className = 'fas fa-chevron-down';
+            } else {
+                item.classList.add('active');
+                const toggleIcon = item.querySelector('.toggle-icon i');
+                toggleIcon.className = 'fas fa-chevron-up';
+            }
+        });
+    });
+    
+    // FAQ CTA Button functionality
+    const faqCtaButtons = document.querySelectorAll('.faq-cta-btn');
+    
+    faqCtaButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const buttonText = this.textContent.trim();
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'notification success';
+            notification.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${buttonText === 'Talk to Expert' ? 'Expert consultation request submitted!' : 'Free demo booking confirmed!'}</span>
+            `;
+            
+            // Add to body
+            document.body.appendChild(notification);
+            
+            // Trigger animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+            
+            // Add button feedback
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i> Request Sent!';
+            this.style.background = 'linear-gradient(135deg, #00ff88 0%, #00cc66 100%)';
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                if (this.classList.contains('primary')) {
+                    this.style.background = 'linear-gradient(135deg, #00d4ff 0%, #0099cc 100%)';
+                } else {
+                    this.style.background = 'rgba(255, 107, 53, 0.2)';
+                }
+            }, 2000);
+        });
+    });
+    
+    // FAQ Section scroll observer for animations
+    const faqObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    // Observe FAQ items
+    faqItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(30px)';
+        item.style.transition = `all 0.6s ease ${index * 0.1}s`;
+        faqObserver.observe(item);
+    });
+});nction() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
     
