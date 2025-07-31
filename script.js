@@ -76,7 +76,7 @@ document.querySelector('.contact-form').addEventListener('submit', function(e) {
 });
 
 // Action button handlers
-document.querySelectorAll('.action-btn, .cta-btn').forEach(btn => {
+document.querySelectorAll('.action-btn, .cta-btn, .section-btn, .tracker-btn, .insights-cta-btn, .get-started-btn, .journey-cta-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const btnText = this.textContent.trim();
         
@@ -100,10 +100,29 @@ document.querySelectorAll('.action-btn, .cta-btn').forEach(btn => {
                 showNotification('Live webinar schedule will be announced!', 'info');
                 break;
             case 'Start Your Journey':
+            case 'Start Your CAT Journey with Rahul Sir':
                 document.querySelector('.consultation-form').scrollIntoView({ behavior: 'smooth' });
                 break;
             case 'Past Year Papers':
                 showNotification('Past year papers will be available in resources section!', 'info');
+                break;
+            case "Join Rahul Sir's VARC Mastery":
+                showNotification('VARC Mastery program enrollment opening soon!', 'success');
+                break;
+            case "Join Rahul Sir's DILR Program":
+                showNotification('DILR program enrollment opening soon!', 'success');
+                break;
+            case "Join Rahul Sir's QA Bootcamp":
+                showNotification('QA Bootcamp enrollment opening soon!', 'success');
+                break;
+            case "Join Rahul Sir's Mastery Program":
+                showNotification('Mastery program enrollment opening soon!', 'success');
+                break;
+            case 'Join Rahul Sir for Expert Guidance':
+                document.querySelector('.consultation-form').scrollIntoView({ behavior: 'smooth' });
+                break;
+            case 'Get Started':
+                document.querySelector('.consultation-form').scrollIntoView({ behavior: 'smooth' });
                 break;
         }
     });
@@ -277,15 +296,19 @@ window.addEventListener('scroll', () => {
 });
 
 // Add hover effects to cards
-document.querySelectorAll('.exam-card, .instructor-card, .consultation-form').forEach(card => {
+document.querySelectorAll('.exam-card, .instructor-card, .consultation-form, .exam-section, .mastery-tracker, .exam-overview, .course-features, .expert-insights').forEach(card => {
     card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-5px)';
-        this.style.boxShadow = '0 15px 35px rgba(0, 212, 255, 0.2)';
+        if (!this.classList.contains('exam-section')) {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 15px 35px rgba(0, 212, 255, 0.2)';
+        }
     });
     
     card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-        this.style.boxShadow = 'none';
+        if (!this.classList.contains('exam-section')) {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        }
     });
 });
 
@@ -347,3 +370,191 @@ animationStyles.textContent = `
 document.head.appendChild(animationStyles);
 
 console.log('CAT Coaching Website - JavaScript Loaded Successfully!');
+
+// Journey Timeline Navigation
+let currentJourneyStep = 0;
+const journeySteps = document.querySelectorAll('.timeline-step');
+const prevBtn = document.querySelector('.prev-btn');
+const nextBtn = document.querySelector('.next-btn');
+
+function updateJourneyStep(stepIndex) {
+    journeySteps.forEach((step, index) => {
+        step.classList.toggle('active', index <= stepIndex);
+    });
+    
+    // Update buttons
+    if (prevBtn && nextBtn) {
+        prevBtn.disabled = stepIndex === 0;
+        nextBtn.disabled = stepIndex === journeySteps.length - 1;
+        
+        prevBtn.style.opacity = stepIndex === 0 ? '0.5' : '1';
+        nextBtn.style.opacity = stepIndex === journeySteps.length - 1 ? '0.5' : '1';
+    }
+}
+
+if (prevBtn && nextBtn) {
+    prevBtn.addEventListener('click', () => {
+        if (currentJourneyStep > 0) {
+            currentJourneyStep--;
+            updateJourneyStep(currentJourneyStep);
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentJourneyStep < journeySteps.length - 1) {
+            currentJourneyStep++;
+            updateJourneyStep(currentJourneyStep);
+        }
+    });
+}
+
+// Auto-advance journey steps
+function autoAdvanceJourney() {
+    const interval = setInterval(() => {
+        if (currentJourneyStep < journeySteps.length - 1) {
+            currentJourneyStep++;
+            updateJourneyStep(currentJourneyStep);
+        } else {
+            currentJourneyStep = 0;
+            updateJourneyStep(currentJourneyStep);
+        }
+    }, 3000);
+    
+    // Stop auto-advance when user interacts
+    if (prevBtn && nextBtn) {
+        [prevBtn, nextBtn].forEach(btn => {
+            btn.addEventListener('click', () => {
+                clearInterval(interval);
+            });
+        });
+    }
+}
+
+// Start auto-advance when journey section is visible
+const journeyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            autoAdvanceJourney();
+            journeyObserver.unobserve(entry.target);
+        }
+    });
+});
+
+const journeySection = document.querySelector('.success-journey');
+if (journeySection) {
+    journeyObserver.observe(journeySection);
+}
+
+// Progress bar animations
+function animateProgressBars() {
+    const progressBars = document.querySelectorAll('.progress-fill, .progress-remaining');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 500);
+    });
+}
+
+// Topic cards interaction
+document.querySelectorAll('.topic-card').forEach(card => {
+    card.addEventListener('click', function() {
+        const topicName = this.querySelector('span').textContent;
+        showNotification(`${topicName} - Detailed content coming soon!`, 'info');
+    });
+});
+
+// Exam section expand/collapse
+document.querySelectorAll('.exam-section').forEach(section => {
+    const header = section.querySelector('.section-header-card');
+    const content = section.querySelector('.topics-grid');
+    
+    header.addEventListener('click', function() {
+        const isExpanded = section.classList.contains('expanded');
+        
+        // Close all other sections
+        document.querySelectorAll('.exam-section').forEach(otherSection => {
+            if (otherSection !== section) {
+                otherSection.classList.remove('expanded');
+            }
+        });
+        
+        section.classList.toggle('expanded', !isExpanded);
+    });
+});
+
+// Add expanded state styles
+const expandStyles = document.createElement('style');
+expandStyles.textContent = `
+    .exam-section:not(.expanded) .topics-grid {
+        display: none;
+    }
+    
+    .exam-section:not(.expanded) .section-cta {
+        display: none;
+    }
+    
+    .exam-section .section-header-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .exam-section .section-header-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        margin: -1rem;
+    }
+    
+    .exam-section.expanded {
+        border-color: rgba(0, 212, 255, 0.7);
+        box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+    }
+`;
+
+document.head.appendChild(expandStyles);
+
+// Initialize first section as expanded
+const firstExamSection = document.querySelector('.exam-section');
+if (firstExamSection) {
+    firstExamSection.classList.add('expanded');
+}
+
+// Smooth scroll for navigation
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        
+        if (targetId === '#courses') {
+            const target = document.querySelector('.exam-structure-section');
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+        
+        // Update active nav link
+        document.querySelectorAll('.nav-link').forEach(navLink => {
+            navLink.classList.remove('active');
+        });
+        this.classList.add('active');
+    });
+});
+
+// Intersection Observer for progress bars
+const progressObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            animateProgressBars();
+        }
+    });
+}, { threshold: 0.5 });
+
+const masteryTracker = document.querySelector('.mastery-tracker');
+if (masteryTracker) {
+    progressObserver.observe(masteryTracker);
+}
